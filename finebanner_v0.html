@@ -1,0 +1,1793 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>finebanner — the quiet studio for LinkedIn headers</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;0,9..144,900;1,9..144,300;1,9..144,400;1,9..144,600;1,9..144,900&family=JetBrains+Mono:wght@400;500;700&family=Archivo+Black&family=Instrument+Serif:ital@0;1&family=Space+Grotesk:wght@300;400;500;700&family=DM+Serif+Display:ital@0;1&family=Bricolage+Grotesque:wght@300;400;600;800&family=Caveat:wght@400;700&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Press+Start+2P&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f4efe6;
+    --bg-2: #e8e1d4;
+    --ink: #1a1713;
+    --ink-soft: #5a5147;
+    --ink-faint: #8a8175;
+    --accent: #c8472c;
+    --accent-soft: rgba(200, 71, 44, 0.1);
+    --line: #1a1713;
+    --paper: #fbf7ef;
+    --warn: #b8651a;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    background: var(--bg); color: var(--ink);
+    font-family: 'Fraunces', Georgia, serif;
+    font-feature-settings: "ss01", "ss02";
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh; overflow-x: hidden;
+  }
+  body {
+    background-image:
+      radial-gradient(circle at 15% 10%, rgba(200, 71, 44, 0.05) 0%, transparent 45%),
+      radial-gradient(circle at 85% 90%, rgba(26, 23, 19, 0.04) 0%, transparent 50%);
+  }
+  .grain {
+    position: fixed; inset: 0; pointer-events: none;
+    opacity: 0.35; mix-blend-mode: multiply; z-index: 1;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' seed='5'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.15 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  .wrap { max-width: 1200px; margin: 0 auto; padding: 40px 28px 80px; position: relative; z-index: 2; }
+
+  .masthead {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    padding-bottom: 24px; margin-bottom: 56px; border-bottom: 1px solid var(--line);
+  }
+  .logo {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(40px, 7vw, 68px);
+    letter-spacing: -0.055em; line-height: 0.92; font-weight: 400;
+  }
+  .logo .fine { font-style: italic; font-weight: 300; color: var(--accent); }
+  .logo .banner { font-weight: 700; }
+  .logo .dot {
+    display: inline-block; width: 8px; height: 8px;
+    background: var(--accent); margin-left: 4px; margin-bottom: 4px;
+    border-radius: 50%; vertical-align: middle;
+  }
+  .mast-meta {
+    text-align: right; font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--ink-soft); line-height: 1.8;
+  }
+  .mast-meta span { display: block; }
+  .mast-meta .quota { color: var(--accent); font-weight: 600; }
+
+  .hero {
+    display: grid; grid-template-columns: 1fr auto;
+    gap: 40px; align-items: end; margin-bottom: 56px;
+  }
+  .hero h1 {
+    font-size: clamp(44px, 7.5vw, 96px);
+    font-weight: 300; letter-spacing: -0.045em; line-height: 0.92;
+  }
+  .hero h1 em { font-style: italic; font-weight: 600; color: var(--accent); }
+  .hero-tag {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--ink-soft); max-width: 180px; text-align: right; line-height: 1.8;
+  }
+
+  .preview-wrap { position: sticky; top: 20px; z-index: 5; margin-bottom: 48px; }
+  .preview-label {
+    display: flex; justify-content: space-between; align-items: baseline;
+    margin-bottom: 10px;
+  }
+  .preview-label .L {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink-soft);
+  }
+  .preview-label .R {
+    font-family: 'Fraunces', serif; font-style: italic; font-size: 15px; color: var(--ink-soft);
+  }
+  .canvas-wrap {
+    position: relative; width: 100%; aspect-ratio: 1584 / 396;
+    background: var(--bg-2); border: 1px solid var(--line); overflow: hidden;
+    box-shadow: 0 8px 32px rgba(26, 23, 19, 0.08);
+  }
+  .canvas-wrap canvas { width: 100%; height: 100%; display: block; }
+  .empty-state {
+    position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+    flex-direction: column; gap: 10px; color: var(--ink-faint); pointer-events: none;
+  }
+  .empty-state .big {
+    font-size: clamp(24px, 3vw, 36px); font-weight: 300; font-style: italic; letter-spacing: -0.02em;
+  }
+  .empty-state .small {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    letter-spacing: 0.25em; text-transform: uppercase;
+  }
+  .canvas-wrap::before {
+    content: ''; position: absolute;
+    left: 6%; bottom: -18%;
+    width: 20%; aspect-ratio: 1;
+    border-radius: 50%; border: 2px dashed rgba(255,255,255,0.25);
+    pointer-events: none; z-index: 2; opacity: 0.6;
+  }
+  .canvas-wrap.has-image::before { display: none; }
+
+  .steps { display: flex; flex-direction: column; gap: 0; border-top: 1px solid var(--line); }
+  .step {
+    display: grid; grid-template-columns: 70px 1fr;
+    gap: 32px; padding: 36px 0; border-bottom: 1px solid var(--line);
+  }
+  .step-num {
+    font-family: 'Fraunces', serif; font-size: 44px;
+    font-weight: 300; font-style: italic; color: var(--accent);
+    line-height: 1; padding-top: 4px;
+  }
+  .step-body h2 {
+    font-family: 'Fraunces', serif; font-size: 28px; font-weight: 600;
+    letter-spacing: -0.025em; line-height: 1.1; margin-bottom: 4px;
+  }
+  .step-sub {
+    font-family: 'Fraunces', serif; font-size: 15px;
+    font-style: italic; color: var(--ink-soft); margin-bottom: 20px;
+  }
+
+  .drop-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media (max-width: 600px) { .drop-row { grid-template-columns: 1fr; } }
+  .drop {
+    border: 1.5px dashed var(--line); padding: 24px 18px; text-align: center;
+    cursor: pointer; transition: all 0.2s; background: transparent; display: block;
+    font-family: 'Fraunces', serif; font-size: 15px; font-style: italic; color: var(--ink-soft);
+  }
+  .drop:hover { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+  .drop.has-file { border-style: solid; border-color: var(--accent); color: var(--ink); font-style: normal; background: var(--paper); }
+  .drop input { display: none; }
+  .drop .mono {
+    font-size: 10px; letter-spacing: 0.15em;
+    font-family: 'JetBrains Mono', monospace; font-style: normal;
+    opacity: 0.55; display: block; margin-top: 6px;
+  }
+  .drop .tag-line {
+    font-family: 'JetBrains Mono', monospace; font-size: 9px;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--accent); display: block; margin-bottom: 6px; font-style: normal;
+  }
+
+  .palette-row {
+    display: grid; grid-template-columns: 1fr auto; gap: 14px;
+    align-items: center; margin-top: 16px;
+  }
+  .palette { display: flex; height: 32px; border: 1px solid var(--line); }
+  .swatch { flex: 1; }
+  .palette.empty .swatch {
+    background: repeating-linear-gradient(45deg, transparent, transparent 4px, var(--bg-2) 4px, var(--bg-2) 8px);
+  }
+  .palette-source {
+    display: flex; gap: 4px;
+    font-family: 'JetBrains Mono', monospace; font-size: 9px;
+    letter-spacing: 0.1em; text-transform: uppercase;
+  }
+  .palette-source button {
+    padding: 8px 12px; border: 1px solid var(--line); background: transparent;
+    cursor: pointer; color: var(--ink-soft);
+    font-family: inherit; font-size: inherit; letter-spacing: inherit; text-transform: inherit;
+  }
+  .palette-source button.active { background: var(--ink); color: var(--paper); }
+  .palette-source button:disabled { opacity: 0.3; cursor: not-allowed; }
+
+  .input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
+  @media (max-width: 600px) { .input-row { grid-template-columns: 1fr; gap: 16px; } }
+  .input-field { display: flex; flex-direction: column; gap: 4px; }
+  .input-field label {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    letter-spacing: 0.15em; text-transform: uppercase; color: var(--ink-soft);
+  }
+  .input-field input {
+    border: none; border-bottom: 1.5px solid var(--line);
+    background: transparent; padding: 6px 0;
+    font-family: 'Fraunces', serif; font-size: 22px;
+    color: var(--ink); outline: none; letter-spacing: -0.01em;
+  }
+  .input-field input:focus { border-bottom-color: var(--accent); }
+  .input-field input::placeholder { color: var(--ink-faint); font-style: italic; opacity: 0.7; }
+
+  /* Contextual quote input (only shown for Luxury style) */
+  .context-input {
+    margin-top: 20px; padding: 20px;
+    background: var(--paper); border: 1px solid var(--line);
+    border-left: 3px solid var(--accent);
+    display: none;
+  }
+  .context-input.show { display: block; }
+  .context-input .ctx-label {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    letter-spacing: 0.15em; text-transform: uppercase; color: var(--accent);
+    margin-bottom: 4px; display: block;
+  }
+  .context-input .ctx-hint {
+    font-family: 'Fraunces', serif; font-size: 13px; font-style: italic;
+    color: var(--ink-soft); margin-bottom: 10px;
+  }
+
+  .style-gallery {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px;
+  }
+  @media (max-width: 900px) { .style-gallery { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 480px) { .style-gallery { grid-template-columns: 1fr; } }
+  .style-card {
+    background: var(--paper); border: 1.5px solid var(--line); padding: 0;
+    cursor: pointer; text-align: left; font-family: inherit;
+    transition: transform 0.15s, box-shadow 0.15s;
+    display: flex; flex-direction: column; overflow: hidden;
+  }
+  .style-card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(26, 23, 19, 0.12); }
+  .style-card.active {
+    border-color: var(--accent); border-width: 2.5px;
+    box-shadow: 0 8px 24px rgba(200, 71, 44, 0.22);
+  }
+  .style-card-thumb {
+    aspect-ratio: 16 / 5; width: 100%; display: block;
+    border-bottom: 1px solid var(--line);
+  }
+  .style-card-body { padding: 12px 14px; }
+  .style-card-num {
+    font-family: 'JetBrains Mono', monospace; font-size: 9px;
+    letter-spacing: 0.18em; color: var(--ink-faint); text-transform: uppercase;
+  }
+  .style-card-name {
+    font-family: 'Fraunces', serif; font-size: 20px; font-weight: 600;
+    letter-spacing: -0.015em; margin-top: 2px;
+  }
+  .style-card-desc {
+    font-family: 'Fraunces', serif; font-style: italic; font-size: 12.5px;
+    color: var(--ink-soft); line-height: 1.45; margin-top: 4px;
+  }
+
+  .font-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  @media (max-width: 600px) { .font-row { grid-template-columns: repeat(2, 1fr); } }
+  .font-pill {
+    padding: 14px 10px; border: 1.5px solid var(--line);
+    background: var(--paper); cursor: pointer; text-align: center;
+    transition: all 0.15s; font-family: inherit;
+  }
+  .font-pill:hover { background: var(--bg); }
+  .font-pill.active { background: var(--ink); color: var(--paper); }
+  .font-pill .preview { display: block; font-size: 28px; line-height: 1; margin-bottom: 6px; }
+  .font-pill .fname {
+    display: block; font-family: 'JetBrains Mono', monospace;
+    font-size: 9px; letter-spacing: 0.15em; text-transform: uppercase; opacity: 0.65;
+  }
+
+  .corner-picker {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 6px;
+    aspect-ratio: 4 / 1; max-width: 400px;
+    background: var(--bg-2); border: 1px solid var(--line); padding: 6px;
+  }
+  .corner-picker button {
+    background: transparent; border: 1.5px dashed rgba(0,0,0,0.2);
+    cursor: pointer; position: relative; transition: all 0.15s;
+  }
+  .corner-picker button::after {
+    content: ''; position: absolute; width: 22px; height: 3px;
+    background: var(--ink-soft); transition: background 0.15s;
+  }
+  .corner-picker button::before {
+    content: ''; position: absolute; width: 14px; height: 2px;
+    background: var(--ink-soft); opacity: 0.5; transition: background 0.15s;
+  }
+  .corner-picker button[data-corner="tl"]::after { top: 16px; left: 22px; }
+  .corner-picker button[data-corner="tl"]::before { top: 24px; left: 22px; }
+  .corner-picker button[data-corner="tr"]::after { top: 16px; right: 22px; }
+  .corner-picker button[data-corner="tr"]::before { top: 24px; right: 22px; }
+  .corner-picker button[data-corner="bl"]::after { bottom: 24px; left: 22px; }
+  .corner-picker button[data-corner="bl"]::before { bottom: 16px; left: 22px; }
+  .corner-picker button[data-corner="br"]::after { bottom: 24px; right: 22px; }
+  .corner-picker button[data-corner="br"]::before { bottom: 16px; right: 22px; }
+  .corner-picker button:hover { background: var(--accent-soft); border-color: var(--accent); }
+  .corner-picker button.active { background: var(--ink); border-color: var(--ink); border-style: solid; }
+  .corner-picker button.active::after, .corner-picker button.active::before { background: var(--paper); }
+
+  .download-btn {
+    width: 100%; padding: 22px; background: var(--accent); color: var(--paper);
+    border: none; font-family: 'Fraunces', serif; font-size: 24px;
+    font-style: italic; font-weight: 400; cursor: pointer;
+    transition: all 0.25s; letter-spacing: 0.01em;
+  }
+  .download-btn:hover:not(:disabled) { background: var(--ink); letter-spacing: 0.04em; }
+  .download-btn:disabled {
+    background: var(--bg-2); color: var(--ink-faint); cursor: not-allowed; font-style: normal;
+  }
+  .quota-msg {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-soft);
+    text-align: center; margin-top: 14px; line-height: 1.6;
+  }
+  .quota-msg.warn { color: var(--warn); }
+  .quota-msg.blocked { color: var(--accent); }
+
+  .modal-backdrop {
+    position: fixed; inset: 0; background: rgba(26, 23, 19, 0.85);
+    backdrop-filter: blur(8px); z-index: 100;
+    display: none; align-items: center; justify-content: center; padding: 24px;
+  }
+  .modal-backdrop.open { display: flex; }
+  .modal {
+    background: var(--paper); max-width: 1200px; width: 100%;
+    max-height: 90vh; overflow-y: auto;
+    border: 1px solid var(--line); padding: 32px;
+  }
+  .modal-header {
+    display: flex; justify-content: space-between; align-items: baseline;
+    border-bottom: 1px solid var(--line); padding-bottom: 16px; margin-bottom: 24px;
+  }
+  .modal-header h3 {
+    font-family: 'Fraunces', serif; font-size: 32px; font-weight: 300; letter-spacing: -0.03em;
+  }
+  .modal-header h3 em { font-style: italic; color: var(--accent); }
+  .modal-close {
+    background: transparent; border: 1px solid var(--line);
+    padding: 8px 16px; cursor: pointer;
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    letter-spacing: 0.15em; text-transform: uppercase;
+  }
+  .modal-close:hover { background: var(--ink); color: var(--paper); }
+  .modal-preview {
+    width: 100%; aspect-ratio: 1584 / 396;
+    background: var(--bg-2); border: 1px solid var(--line);
+    margin-bottom: 24px; position: relative; overflow: hidden;
+  }
+  .modal-preview img { width: 100%; height: 100%; display: block; }
+  .modal-preview::after {
+    content: ''; position: absolute;
+    left: 6%; bottom: -20%;
+    width: 20%; aspect-ratio: 1;
+    border-radius: 50%; border: 4px solid var(--paper);
+    background: var(--bg-2); z-index: 2;
+  }
+  .modal-actions {
+    display: grid; grid-template-columns: 1fr 2fr; gap: 12px;
+  }
+  @media (max-width: 600px) { .modal-actions { grid-template-columns: 1fr; } }
+  .btn-secondary {
+    padding: 16px; background: transparent; border: 1.5px solid var(--line);
+    font-family: 'Fraunces', serif; font-size: 16px; cursor: pointer; color: var(--ink);
+  }
+  .btn-secondary:hover { background: var(--ink); color: var(--paper); }
+  .btn-primary {
+    padding: 16px; background: var(--accent); border: none; color: var(--paper);
+    font-family: 'Fraunces', serif; font-size: 18px; font-style: italic; cursor: pointer;
+  }
+  .btn-primary:hover { background: var(--ink); }
+  .modal-note {
+    font-family: 'Fraunces', serif; font-style: italic; font-size: 14px;
+    color: var(--ink-soft); text-align: center; margin-bottom: 16px;
+  }
+
+  .footer {
+    margin-top: 64px; padding-top: 32px; border-top: 1px solid var(--line);
+    display: grid; grid-template-columns: 1fr auto; gap: 24px;
+    font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    letter-spacing: 0.15em; text-transform: uppercase; color: var(--ink-soft);
+  }
+  .footer em {
+    font-family: 'Fraunces', serif; font-style: italic; font-size: 14px;
+    text-transform: none; letter-spacing: 0; color: var(--ink);
+  }
+  .tag {
+    display: inline-block; padding: 3px 8px; border: 1px solid var(--line);
+    font-size: 9px; margin-right: 6px;
+  }
+</style>
+</head>
+<body>
+<div class="grain"></div>
+
+<div class="wrap">
+
+  <header class="masthead">
+    <div class="logo">
+      <span class="fine">fine</span><span class="banner">banner</span><span class="dot"></span>
+    </div>
+    <div class="mast-meta">
+      <span>Vol. I ·</span>
+      <span id="dateline">APR · MMXXVI</span>
+      <span class="quota" id="quotaMeta">10 downloads available</span>
+    </div>
+  </header>
+
+  <section class="hero">
+    <h1><em>Escape</em><br>the<br><em>default</em> banner.</h1>
+    <div class="hero-tag">
+      Five small steps.<br>
+      One downloadable<br>
+      LinkedIn banner.<br>
+      No accounts, no pricing.
+    </div>
+  </section>
+
+  <section class="preview-wrap">
+    <div class="preview-label">
+      <span class="L">↓ Live Preview · 1584 × 396</span>
+      <span class="R" id="styleName"><em>— upload a portrait to begin —</em></span>
+    </div>
+    <div class="canvas-wrap" id="canvasWrap">
+      <canvas id="canvas" width="1584" height="396"></canvas>
+      <div class="empty-state" id="emptyState">
+        <div class="big">awaiting portrait</div>
+        <div class="small">begin with step one</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="steps">
+
+    <div class="step">
+      <div class="step-num">01</div>
+      <div class="step-body">
+        <h2>Bring your image.</h2>
+        <p class="step-sub">We extract a 5-color palette from your portrait. Adding a logo is optional, but blends its brand colors in.</p>
+        <div class="drop-row">
+          <label class="drop" id="dropPortrait">
+            <span class="tag-line">Required</span>
+            <span id="dropPortraitText">Click or drag your portrait<span class="mono">JPG · PNG · WEBP</span></span>
+            <input type="file" id="portraitInput" accept="image/*">
+          </label>
+          <label class="drop" id="dropLogo">
+            <span class="tag-line" style="color: var(--ink-faint)">Optional</span>
+            <span id="dropLogoText">Add a company logo<span class="mono">blends its colors too</span></span>
+            <input type="file" id="logoInput" accept="image/*">
+          </label>
+        </div>
+        <div class="palette-row">
+          <div class="palette empty" id="palette">
+            <div class="swatch"></div><div class="swatch"></div><div class="swatch"></div><div class="swatch"></div><div class="swatch"></div>
+          </div>
+          <div class="palette-source">
+            <button data-src="portrait" class="active" id="srcPortrait">Portrait</button>
+            <button data-src="logo" id="srcLogo" disabled>Logo</button>
+            <button data-src="blend" id="srcBlend" disabled>Blend</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">02</div>
+      <div class="step-body">
+        <h2>Say who you are.</h2>
+        <p class="step-sub">A name and a tagline — a role, a mission, a line of poetry. Whatever suits.</p>
+        <div class="input-row">
+          <div class="input-field">
+            <label>Name</label>
+            <input type="text" id="nameInput" placeholder="e.g. Alex Rivera">
+          </div>
+          <div class="input-field">
+            <label>Tagline</label>
+            <input type="text" id="titleInput" placeholder="e.g. Product designer · Berlin">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">03</div>
+      <div class="step-body">
+        <h2>Choose a visual voice.</h2>
+        <p class="step-sub">Six directions — each one responds to your palette. Click to preview above.</p>
+        <div class="style-gallery" id="styleGallery"></div>
+
+        <!-- Quote input only shows when Luxury Typography is selected -->
+        <div class="context-input" id="quoteInputWrap">
+          <span class="ctx-label">Quote · 05</span>
+          <div class="ctx-hint">This style is built around a quote. Keep it under 10 words for best results.</div>
+          <div class="input-field">
+            <input type="text" id="quoteInput" placeholder='e.g. "Do one thing, and do it well."'>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">04</div>
+      <div class="step-body">
+        <h2>Set your type.</h2>
+        <p class="step-sub">Typography changes everything. Pair your words with a voice.</p>
+        <div class="font-row" id="fontRow"></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">05</div>
+      <div class="step-body">
+        <h2>Place your name.</h2>
+        <p class="step-sub">Pick a corner. The dashed circle shows where LinkedIn will put your profile picture.</p>
+        <div class="corner-picker" id="cornerPicker">
+          <button data-corner="tl" title="Top Left"></button>
+          <button data-corner="tr" class="active" title="Top Right"></button>
+          <button data-corner="bl" title="Bottom Left"></button>
+          <button data-corner="br" title="Bottom Right"></button>
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">06</div>
+      <div class="step-body">
+        <h2>Take it home.</h2>
+        <p class="step-sub">You'll see a full-size preview first — with a simulated profile circle — so you can confirm before downloading.</p>
+        <button class="download-btn" id="downloadBtn" disabled>Preview &amp; Download →</button>
+        <div class="quota-msg" id="quotaMsg">10 of 10 downloads available</div>
+      </div>
+    </div>
+
+  </div>
+
+  <footer class="footer">
+    <span>
+      <span class="tag">LinkedIn</span>
+      <span class="tag">1584×396</span>
+      <span class="tag">PNG</span>
+      <span class="tag">Client-side only</span>
+    </span>
+    <em>by Mountstorm Labs, for linkedin family.</em>
+  </footer>
+</div>
+
+<div class="modal-backdrop" id="modalBackdrop">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Ready to <em>download?</em></h3>
+      <button class="modal-close" id="modalClose">Back ✕</button>
+    </div>
+    <p class="modal-note">Full-size preview with a simulated LinkedIn profile circle, so you know exactly what it'll look like.</p>
+    <div class="modal-preview" id="modalPreview">
+      <img id="modalImg" alt="Banner preview">
+    </div>
+    <div class="modal-actions">
+      <button class="btn-secondary" id="modalBack">Keep editing</button>
+      <button class="btn-primary" id="modalConfirm">Download PNG →</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const state = {
+  portrait: null, logo: null,
+  portraitPalette: [], logoPalette: [],
+  palette: [], paletteSource: 'portrait',
+  name: '', title: '', quote: '',
+  style: 'gradient',
+  font: 'editorial',
+  corner: 'tr',
+};
+
+// Rate limit
+const RATE_KEY = 'finebanner_downloads_v1';
+const RATE_LIMIT = 10;
+const RATE_WINDOW_MS = 2 * 60 * 60 * 1000;
+function getDownloads() {
+  try {
+    const raw = localStorage.getItem(RATE_KEY);
+    if (!raw) return [];
+    return JSON.parse(raw).filter(t => t > Date.now() - RATE_WINDOW_MS);
+  } catch { return []; }
+}
+function recordDownload() {
+  const c = getDownloads(); c.push(Date.now());
+  try { localStorage.setItem(RATE_KEY, JSON.stringify(c)); } catch {}
+  updateQuotaUI();
+}
+function remainingDownloads() { return Math.max(0, RATE_LIMIT - getDownloads().length); }
+function timeUntilReset() {
+  const d = getDownloads();
+  if (d.length < RATE_LIMIT) return 0;
+  return Math.max(0, (Math.min(...d) + RATE_WINDOW_MS) - Date.now());
+}
+function formatDuration(ms) {
+  const m = Math.ceil(ms / 60000);
+  const h = Math.floor(m / 60), mm = m % 60;
+  if (h === 0) return `${mm}m`;
+  if (mm === 0) return `${h}h`;
+  return `${h}h ${mm}m`;
+}
+
+// DOM
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+const canvasWrap = document.getElementById('canvasWrap');
+const emptyState = document.getElementById('emptyState');
+const styleNameEl = document.getElementById('styleName');
+const paletteEl = document.getElementById('palette');
+const dateline = document.getElementById('dateline');
+const quotaMsg = document.getElementById('quotaMsg');
+const quotaMeta = document.getElementById('quotaMeta');
+const downloadBtn = document.getElementById('downloadBtn');
+const nameInput = document.getElementById('nameInput');
+const titleInput = document.getElementById('titleInput');
+const quoteInput = document.getElementById('quoteInput');
+const quoteInputWrap = document.getElementById('quoteInputWrap');
+const cornerPicker = document.getElementById('cornerPicker');
+const srcPortrait = document.getElementById('srcPortrait');
+const srcLogo = document.getElementById('srcLogo');
+const srcBlend = document.getElementById('srcBlend');
+const styleGalleryEl = document.getElementById('styleGallery');
+const fontRowEl = document.getElementById('fontRow');
+const modalBackdrop = document.getElementById('modalBackdrop');
+const modalClose = document.getElementById('modalClose');
+const modalBack = document.getElementById('modalBack');
+const modalConfirm = document.getElementById('modalConfirm');
+const modalImg = document.getElementById('modalImg');
+
+const months = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+const now = new Date();
+dateline.textContent = `${months[now.getMonth()]} · ${romanize(now.getFullYear())}`;
+function romanize(n) {
+  const r = [['M',1000],['CM',900],['D',500],['CD',400],['C',100],['XC',90],['L',50],['XL',40],['X',10],['IX',9],['V',5],['IV',4],['I',1]];
+  let out = '';
+  for (const [s, v] of r) { while (n >= v) { out += s; n -= v; } }
+  return out;
+}
+
+// Fonts
+const FONTS = [
+  { id:'editorial', name:'Editorial', preview:'Aa',
+    display:"'Fraunces', Georgia, serif", body:"'Fraunces', Georgia, serif",
+    displayWeight:'600', displayStyle:'normal', bodyWeight:'300', bodyStyle:'italic',
+    letterSpacing:'-0.02em' },
+  { id:'brutalist', name:'Brutalist', preview:'Aa',
+    display:"'Archivo Black', sans-serif", body:"'JetBrains Mono', monospace",
+    displayWeight:'900', displayStyle:'normal', bodyWeight:'500', bodyStyle:'normal',
+    letterSpacing:'-0.04em', bodyUppercase:true, bodyLetterSpacing:'0.15em' },
+  { id:'elegant', name:'Elegant', preview:'Aa',
+    display:"'Instrument Serif', Georgia, serif", body:"'Instrument Serif', Georgia, serif",
+    displayWeight:'400', displayStyle:'normal', bodyWeight:'400', bodyStyle:'italic',
+    letterSpacing:'-0.01em' },
+  { id:'modern', name:'Modern', preview:'Aa',
+    display:"'Space Grotesk', sans-serif", body:"'Space Grotesk', sans-serif",
+    displayWeight:'700', displayStyle:'normal', bodyWeight:'400', bodyStyle:'normal',
+    letterSpacing:'-0.03em' },
+  { id:'couture', name:'Couture', preview:'Aa',
+    display:"'DM Serif Display', Georgia, serif", body:"'Space Grotesk', sans-serif",
+    displayWeight:'400', displayStyle:'italic', bodyWeight:'400', bodyStyle:'normal',
+    letterSpacing:'-0.02em', bodyUppercase:true, bodyLetterSpacing:'0.25em', bodySizeMult:0.45 },
+  { id:'manifesto', name:'Manifesto', preview:'Aa',
+    display:"'Bricolage Grotesque', sans-serif", body:"'Bricolage Grotesque', sans-serif",
+    displayWeight:'800', displayStyle:'normal', bodyWeight:'400', bodyStyle:'normal',
+    letterSpacing:'-0.045em', displaySizeMult:1.05 },
+  { id:'personal', name:'Personal', preview:'Aa',
+    display:"'Playfair Display', Georgia, serif", body:"'Caveat', cursive",
+    displayWeight:'900', displayStyle:'normal', bodyWeight:'700', bodyStyle:'normal',
+    letterSpacing:'-0.02em', bodySizeMult:0.85 },
+  { id:'technical', name:'Technical', preview:'Aa',
+    display:"'JetBrains Mono', monospace", body:"'JetBrains Mono', monospace",
+    displayWeight:'700', displayStyle:'normal', bodyWeight:'400', bodyStyle:'normal',
+    letterSpacing:'-0.04em', displaySizeMult:0.8, bodyUppercase:true, bodyLetterSpacing:'0.1em' },
+];
+FONTS.forEach(f => {
+  const btn = document.createElement('button');
+  btn.className = 'font-pill' + (f.id === state.font ? ' active' : '');
+  btn.innerHTML = `
+    <span class="preview" style="font-family:${f.display}; font-weight:${f.displayWeight}; font-style:${f.displayStyle}">${f.preview}</span>
+    <span class="fname">${f.name}</span>`;
+  btn.addEventListener('click', () => {
+    state.font = f.id;
+    fontRowEl.querySelectorAll('.font-pill').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    render();
+  });
+  fontRowEl.appendChild(btn);
+});
+
+// Styles
+const STYLES = [
+  { id:'gradient',     name:'Soft Gradient',      desc:'Fluid mesh of palette colors. Calm, modern, uncluttered.',                draw: drawSoftGradient },
+  { id:'anthro',       name:'Anthropomorphic',    desc:'Organic Matisse-like figures. Warm cut-paper silhouettes.',               draw: drawAnthropomorphic },
+  { id:'pixel',        name:'Pixel Art',          desc:'Chunky retro pixels. Horizon, sun, and stars in 8-bit.',                  draw: drawPixelArt },
+  { id:'sketch',       name:'Conceptual Sketch',  desc:'Designer\'s working notebook. Pencil lines and annotations.',             draw: drawSketch },
+  { id:'luxury',       name:'Luxury Typography',  desc:'A single quote, rendered like fashion editorial. Refined.',               draw: drawLuxury },
+  { id:'ethereal',     name:'Ethereal',           desc:'Light beams, mist, and bokeh. Atmospheric and dreamy.',                   draw: drawEthereal },
+];
+
+STYLES.forEach((s, i) => {
+  const card = document.createElement('button');
+  card.className = 'style-card' + (s.id === state.style ? ' active' : '');
+  card.dataset.id = s.id;
+  card.innerHTML = `
+    <canvas class="style-card-thumb" data-style="${s.id}" width="480" height="150"></canvas>
+    <div class="style-card-body">
+      <div class="style-card-num">Style · 0${i + 1}</div>
+      <div class="style-card-name">${s.name}</div>
+      <div class="style-card-desc">${s.desc}</div>
+    </div>`;
+  card.addEventListener('click', () => {
+    state.style = s.id;
+    styleGalleryEl.querySelectorAll('.style-card').forEach(c => c.classList.remove('active'));
+    card.classList.add('active');
+    styleNameEl.innerHTML = `<em>${s.name.toLowerCase()}</em>`;
+    // show quote input only for luxury
+    quoteInputWrap.classList.toggle('show', s.id === 'luxury');
+    render();
+  });
+  styleGalleryEl.appendChild(card);
+});
+
+const DEMO_PALETTE = [[240, 220, 180], [200, 71, 44], [58, 85, 110], [170, 140, 100], [30, 35, 45]];
+function renderThumbnails() {
+  const p = state.palette.length ? state.palette : DEMO_PALETTE;
+  STYLES.forEach(s => {
+    const el = document.querySelector(`canvas[data-style="${s.id}"]`);
+    if (!el) return;
+    const tctx = el.getContext('2d');
+    tctx.clearRect(0, 0, el.width, el.height);
+    tctx.save();
+    s.draw.call(null, el.width, el.height, p, tctx, true);
+    tctx.restore();
+  });
+}
+setTimeout(renderThumbnails, 100);
+
+styleNameEl.innerHTML = `<em>${STYLES[0].name.toLowerCase()}</em>`;
+
+cornerPicker.querySelectorAll('button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    state.corner = btn.dataset.corner;
+    cornerPicker.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    render();
+  });
+});
+
+// Upload
+function setupDrop(dropEl, inputEl, onFile) {
+  dropEl.addEventListener('dragover', (e) => { e.preventDefault(); dropEl.style.background = 'rgba(200, 71, 44, 0.1)'; });
+  dropEl.addEventListener('dragleave', () => { dropEl.style.background = ''; });
+  dropEl.addEventListener('drop', (e) => {
+    e.preventDefault(); dropEl.style.background = '';
+    if (e.dataTransfer.files[0]) onFile(e.dataTransfer.files[0]);
+  });
+  inputEl.addEventListener('change', (e) => { if (e.target.files[0]) onFile(e.target.files[0]); });
+}
+const portraitInput = document.getElementById('portraitInput');
+const logoInput = document.getElementById('logoInput');
+const dropPortrait = document.getElementById('dropPortrait');
+const dropLogo = document.getElementById('dropLogo');
+const dropPortraitText = document.getElementById('dropPortraitText');
+const dropLogoText = document.getElementById('dropLogoText');
+
+setupDrop(dropPortrait, portraitInput, (f) => handleFile(f, 'portrait'));
+setupDrop(dropLogo, logoInput, (f) => handleFile(f, 'logo'));
+
+function handleFile(file, kind) {
+  if (!file.type.startsWith('image/')) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const img = new Image();
+    img.onload = () => {
+      if (kind === 'portrait') {
+        state.portrait = img;
+        state.portraitPalette = extractPalette(img, 5);
+        dropPortrait.classList.add('has-file');
+        dropPortraitText.innerHTML = `<span class="tag-line">Loaded</span>✓ <em>${truncate(file.name)}</em><span class="mono">click to replace</span>`;
+        emptyState.style.display = 'none';
+        canvasWrap.classList.add('has-image');
+        if (remainingDownloads() > 0) downloadBtn.disabled = false;
+      } else {
+        state.logo = img;
+        state.logoPalette = extractPalette(img, 5);
+        dropLogo.classList.add('has-file');
+        dropLogoText.innerHTML = `<span class="tag-line">Loaded</span>✓ <em>${truncate(file.name)}</em><span class="mono">click to replace</span>`;
+        srcLogo.disabled = false;
+        srcBlend.disabled = false;
+      }
+      computeActivePalette();
+      updatePaletteUI();
+      render();
+      renderThumbnails();
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+function truncate(s) { return s.length > 22 ? s.slice(0, 20) + '…' : s; }
+
+[srcPortrait, srcLogo, srcBlend].forEach(btn => {
+  btn.addEventListener('click', () => {
+    if (btn.disabled) return;
+    state.paletteSource = btn.dataset.src;
+    [srcPortrait, srcLogo, srcBlend].forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    computeActivePalette();
+    updatePaletteUI();
+    render();
+    renderThumbnails();
+  });
+});
+
+function computeActivePalette() {
+  if (state.paletteSource === 'logo' && state.logoPalette.length) {
+    state.palette = state.logoPalette;
+  } else if (state.paletteSource === 'blend' && state.logoPalette.length && state.portraitPalette.length) {
+    const mix = [...state.portraitPalette.slice(0, 3), ...state.logoPalette.slice(0, 3)];
+    const deduped = [];
+    for (const c of mix) {
+      if (!deduped.some(d => colorDist(c, d) < 40)) deduped.push(c);
+      if (deduped.length === 5) break;
+    }
+    while (deduped.length < 5 && mix.length > 0) deduped.push(mix[deduped.length % mix.length]);
+    state.palette = deduped;
+  } else {
+    state.palette = state.portraitPalette;
+  }
+}
+function colorDist(a, b) { return Math.sqrt((a[0]-b[0])**2 + (a[1]-b[1])**2 + (a[2]-b[2])**2); }
+
+function extractPalette(img, k = 5) {
+  const size = 64;
+  const c = document.createElement('canvas');
+  c.width = size; c.height = size;
+  const cx = c.getContext('2d');
+  cx.drawImage(img, 0, 0, size, size);
+  const data = cx.getImageData(0, 0, size, size).data;
+  const pixels = [];
+  for (let i = 0; i < data.length; i += 4) {
+    const r = data[i], g = data[i+1], b = data[i+2], a = data[i+3];
+    if (a < 128) continue;
+    const max = Math.max(r,g,b), min = Math.min(r,g,b);
+    if (max < 15 || min > 245) continue;
+    pixels.push([r, g, b]);
+  }
+  if (pixels.length === 0) return [[100,100,100],[150,150,150],[200,200,200],[80,80,80],[50,50,50]];
+  function bucket(pxs, depth) {
+    if (depth === 0 || pxs.length === 0) {
+      if (pxs.length === 0) return [[128,128,128]];
+      const avg = pxs.reduce((a, p) => [a[0]+p[0], a[1]+p[1], a[2]+p[2]], [0,0,0]).map(v => Math.round(v / pxs.length));
+      return [avg];
+    }
+    const ranges = [0,1,2].map(ch => {
+      let mn = 255, mx = 0;
+      for (const p of pxs) { if (p[ch] < mn) mn = p[ch]; if (p[ch] > mx) mx = p[ch]; }
+      return mx - mn;
+    });
+    const ch = ranges.indexOf(Math.max(...ranges));
+    pxs.sort((a, b) => a[ch] - b[ch]);
+    const mid = Math.floor(pxs.length / 2);
+    return [...bucket(pxs.slice(0, mid), depth - 1), ...bucket(pxs.slice(mid), depth - 1)];
+  }
+  const depth = Math.ceil(Math.log2(k));
+  let palette = bucket(pixels, depth);
+  palette.sort((a, b) => luminance(b) - luminance(a));
+  return palette.slice(0, k);
+}
+function luminance([r,g,b]) { return 0.2126*r + 0.7152*g + 0.0722*b; }
+function saturation([r,g,b]) {
+  const max = Math.max(r,g,b), min = Math.min(r,g,b);
+  return max === 0 ? 0 : (max - min) / max;
+}
+function rgb(c) { return `rgb(${c[0]}, ${c[1]}, ${c[2]})`; }
+function rgba(c, a) { return `rgba(${c[0]}, ${c[1]}, ${c[2]}, ${a})`; }
+function darken(c, amt) { return [Math.max(0,c[0]-amt), Math.max(0,c[1]-amt), Math.max(0,c[2]-amt)]; }
+function lighten(c, amt) { return [Math.min(255,c[0]+amt), Math.min(255,c[1]+amt), Math.min(255,c[2]+amt)]; }
+
+function updatePaletteUI() {
+  if (!state.palette.length) return;
+  paletteEl.classList.remove('empty');
+  paletteEl.innerHTML = '';
+  state.palette.forEach(c => {
+    const sw = document.createElement('div');
+    sw.className = 'swatch';
+    sw.style.background = rgb(c);
+    paletteEl.appendChild(sw);
+  });
+}
+
+nameInput.addEventListener('input', (e) => { state.name = e.target.value; render(); });
+titleInput.addEventListener('input', (e) => { state.title = e.target.value; render(); });
+quoteInput.addEventListener('input', (e) => { state.quote = e.target.value; render(); });
+
+function render() {
+  if (!state.portrait) return;
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+  const p = state.palette;
+  const styleObj = STYLES.find(s => s.id === state.style);
+  if (styleObj) styleObj.draw(W, H, p, ctx, false);
+  drawText(W, H, p, ctx);
+}
+
+function mkRand(seed) {
+  let s = seed;
+  return () => { s = (s * 9301 + 49297) % 233280; return s / 233280; };
+}
+
+// ═══════════════════════════════════════════════════════
+// STYLE 01 — SOFT GRADIENT
+// ═══════════════════════════════════════════════════════
+function drawSoftGradient(W, H, p, c, isThumb) {
+  const dark = [...p].sort((a,b) => luminance(a) - luminance(b))[0];
+  c.fillStyle = rgb(dark);
+  c.fillRect(0, 0, W, H);
+  const positions = [
+    {x:0.10,y:0.25,r:0.75},{x:0.55,y:0.85,r:0.6},{x:0.85,y:0.15,r:0.7},
+    {x:0.30,y:0.55,r:0.5},{x:0.75,y:0.50,r:0.55},{x:0.95,y:0.85,r:0.45},
+  ];
+  p.forEach((color, i) => {
+    const pos = positions[i % positions.length];
+    const grad = c.createRadialGradient(pos.x*W, pos.y*H, 0, pos.x*W, pos.y*H, pos.r*W);
+    grad.addColorStop(0,   rgba(color, 0.95));
+    grad.addColorStop(0.35, rgba(color, 0.55));
+    grad.addColorStop(0.7,  rgba(color, 0.15));
+    grad.addColorStop(1,   rgba(color, 0));
+    c.fillStyle = grad; c.fillRect(0, 0, W, H);
+  });
+  const bright = [...p].sort((a,b) => saturation(b) - saturation(a))[0] || p[0];
+  const bg = c.createRadialGradient(W*0.5, H*0.5, 0, W*0.5, H*0.5, W*0.6);
+  bg.addColorStop(0, rgba(bright, 0.25));
+  bg.addColorStop(1, rgba(bright, 0));
+  c.fillStyle = bg; c.fillRect(0, 0, W, H);
+  if (!isThumb) addNoise(W, H, 0.035, c);
+}
+
+// ═══════════════════════════════════════════════════════
+// STYLE 02 — ANTHROPOMORPHIC
+// Matisse-like organic cut-paper figures. Abstract human suggestion.
+// ═══════════════════════════════════════════════════════
+function drawAnthropomorphic(W, H, p, c, isThumb) {
+  const sorted = [...p].sort((a,b) => luminance(b) - luminance(a));
+  const bg = sorted[0];
+  // warm paper background
+  c.fillStyle = rgb(bg);
+  c.fillRect(0, 0, W, H);
+
+  const accent = [...p].sort((a,b) => saturation(b) - saturation(a))[0] || sorted[1];
+  const shadow = sorted[sorted.length - 1];
+  const mid1 = sorted[1] || accent;
+  const mid2 = sorted[2] || mid1;
+  const mid3 = sorted[3] || mid2;
+
+  // Helper: draw an organic blob-body silhouette (suggests a torso/figure)
+  // Made of a head circle + wider torso + arm curve
+  function drawFigure(cx, cy, scale, color, rotation = 0, mirror = false) {
+    c.save();
+    c.translate(cx, cy);
+    c.rotate(rotation);
+    if (mirror) c.scale(-1, 1);
+    c.fillStyle = rgb(color);
+
+    // Body path — flowing from head down to "seated" pose
+    c.beginPath();
+    const s = scale;
+    // head
+    c.arc(0, -80 * s, 28 * s, 0, Math.PI * 2);
+    c.fill();
+    // neck/shoulder/body curve
+    c.beginPath();
+    c.moveTo(-18 * s, -55 * s);
+    // shoulders flowing outward
+    c.bezierCurveTo(-55 * s, -50 * s, -80 * s, -20 * s, -70 * s, 30 * s);
+    // hip curve
+    c.bezierCurveTo(-65 * s, 60 * s, -40 * s, 90 * s, -20 * s, 95 * s);
+    // base
+    c.lineTo(25 * s, 95 * s);
+    // other side up
+    c.bezierCurveTo(50 * s, 90 * s, 70 * s, 50 * s, 55 * s, 0 * s);
+    c.bezierCurveTo(45 * s, -30 * s, 30 * s, -50 * s, 18 * s, -55 * s);
+    c.closePath();
+    c.fill();
+
+    c.restore();
+  }
+
+  // Helper: abstract leaf/wing shape
+  function drawLeaf(cx, cy, scale, color, rotation = 0) {
+    c.save();
+    c.translate(cx, cy);
+    c.rotate(rotation);
+    c.fillStyle = rgb(color);
+    c.beginPath();
+    c.moveTo(0, 0);
+    c.bezierCurveTo(40 * scale, -20 * scale, 90 * scale, -30 * scale, 120 * scale, 0);
+    c.bezierCurveTo(90 * scale, 25 * scale, 40 * scale, 20 * scale, 0, 0);
+    c.closePath();
+    c.fill();
+    c.restore();
+  }
+
+  // Helper: gestural curve/swoosh (like flowing fabric or a gesture)
+  function drawCurve(pts, width, color, alpha = 1) {
+    c.strokeStyle = rgba(color, alpha);
+    c.lineWidth = width;
+    c.lineCap = 'round';
+    c.beginPath();
+    c.moveTo(pts[0][0], pts[0][1]);
+    for (let i = 1; i < pts.length - 2; i += 2) {
+      c.bezierCurveTo(pts[i][0], pts[i][1], pts[i+1][0], pts[i+1][1], pts[i+2][0], pts[i+2][1]);
+    }
+    c.stroke();
+  }
+
+  // ── Composition ──
+  // Big organic leaf shape far right (decorative)
+  drawLeaf(W * 0.92, H * 0.45, 2.2, mid3, -0.4);
+
+  // Large "back" figure, partially behind — lightest color
+  drawFigure(W * 0.62, H * 0.55, 1.4, mid1, 0.1);
+
+  // Leaf/wing emerging from behind figure
+  drawLeaf(W * 0.50, H * 0.25, 1.8, accent, 0.3);
+
+  // Foreground figure, smaller, leaning — accent color
+  drawFigure(W * 0.78, H * 0.60, 1.1, accent, -0.15, true);
+
+  // Small "floating" circle (like a moon or sun above them)
+  c.fillStyle = rgb(shadow);
+  c.beginPath();
+  c.arc(W * 0.4, H * 0.25, 32, 0, Math.PI * 2);
+  c.fill();
+
+  // Flowing gestural curve across middle (like ribbon/wind)
+  drawCurve([
+    [W * 0.3, H * 0.45],
+    [W * 0.4, H * 0.2],  [W * 0.5, H * 0.35],  [W * 0.6, H * 0.5],
+    [W * 0.7, H * 0.65], [W * 0.85, H * 0.3],  [W * 0.95, H * 0.5],
+  ], 6, shadow, 0.6);
+
+  // Small accent dots scattered
+  const rand = mkRand(99);
+  for (let i = 0; i < 12; i++) {
+    const dx = 0.35 + rand() * 0.6;
+    const dy = 0.2 + rand() * 0.6;
+    c.fillStyle = rgba(shadow, 0.5);
+    c.beginPath();
+    c.arc(W * dx, H * dy, 2 + rand() * 3, 0, Math.PI * 2);
+    c.fill();
+  }
+
+  // Small leaf accent bottom
+  drawLeaf(W * 0.35, H * 0.85, 0.8, mid2, -0.2);
+
+  if (!isThumb) addNoise(W, H, 0.03, c);
+}
+
+// ═══════════════════════════════════════════════════════
+// STYLE 03 — PIXEL ART
+// Chunky 8-bit scene: sky, pixel sun, mountain, stars
+// ═══════════════════════════════════════════════════════
+function drawPixelArt(W, H, p, c, isThumb) {
+  const sorted = [...p].sort((a,b) => luminance(b) - luminance(a));
+  const light = sorted[0];
+  const mid = sorted[1] || light;
+  const midDark = sorted[2] || mid;
+  const dark = sorted[sorted.length - 1];
+  const accent = [...p].sort((a,b) => saturation(b) - saturation(a))[0] || mid;
+
+  // Disable anti-aliasing for true pixel look
+  c.imageSmoothingEnabled = false;
+
+  // Choose pixel size: keeps integer pixels so they render crisp
+  const pixelSize = isThumb ? 4 : 12;
+  const cols = Math.floor(W / pixelSize);
+  const rows = Math.floor(H / pixelSize);
+
+  // Helper: draw a pixel
+  function px(x, y, color, alpha = 1) {
+    if (x < 0 || y < 0 || x >= cols || y >= rows) return;
+    c.fillStyle = alpha < 1 ? rgba(color, alpha) : rgb(color);
+    c.fillRect(x * pixelSize, y * pixelSize, pixelSize, pixelSize);
+  }
+
+  // ── Sky gradient (banded for retro feel) ──
+  // Top half = sky, bottom half = ground
+  const horizonRow = Math.floor(rows * 0.6);
+  const skyBands = [
+    { rows: Math.floor(horizonRow * 0.3), color: dark },
+    { rows: Math.floor(horizonRow * 0.3), color: midDark },
+    { rows: Math.floor(horizonRow * 0.25), color: mid },
+    { rows: horizonRow - Math.floor(horizonRow * 0.85), color: accent },
+  ];
+  let curRow = 0;
+  skyBands.forEach(band => {
+    for (let y = curRow; y < curRow + band.rows; y++) {
+      for (let x = 0; x < cols; x++) px(x, y, band.color);
+    }
+    curRow += band.rows;
+  });
+
+  // ── Pixel sun (a circle of pixels on horizon, right side) ──
+  const sunCX = Math.floor(cols * 0.72);
+  const sunCY = horizonRow;
+  const sunR = Math.floor(Math.min(rows * 0.35, 8));
+  for (let dy = -sunR; dy <= sunR; dy++) {
+    for (let dx = -sunR; dx <= sunR; dx++) {
+      const d = Math.sqrt(dx * dx + dy * dy);
+      if (d <= sunR) {
+        // Shade with gradient layers for classic pixel sun look
+        let sunColor;
+        if (d < sunR * 0.4) sunColor = lighten(accent, 40);
+        else if (d < sunR * 0.75) sunColor = accent;
+        else sunColor = darken(accent, 10);
+        px(sunCX + dx, sunCY + dy, sunColor);
+      }
+    }
+  }
+
+  // ── Stars (single pixels, scattered in sky) ──
+  const rand = mkRand(123);
+  const starCount = isThumb ? 15 : 60;
+  for (let i = 0; i < starCount; i++) {
+    const sx = Math.floor(rand() * cols);
+    const sy = Math.floor(rand() * horizonRow * 0.7);
+    const brightness = rand() > 0.6 ? light : mid;
+    px(sx, sy, brightness);
+    // sometimes add a plus-shaped twinkle
+    if (rand() > 0.85) {
+      px(sx - 1, sy, brightness);
+      px(sx + 1, sy, brightness);
+      px(sx, sy - 1, brightness);
+      px(sx, sy + 1, brightness);
+    }
+  }
+
+  // ── Ground (pixel pattern) ──
+  for (let y = horizonRow; y < rows; y++) {
+    const t = (y - horizonRow) / (rows - horizonRow);
+    const color = t < 0.3 ? darken(dark, 5) : darken(dark, 15);
+    for (let x = 0; x < cols; x++) {
+      // Add some pixel "texture" — sparse lighter/darker pixels
+      const noise = mkRand(x * 37 + y * 91)();
+      let clr = color;
+      if (noise > 0.92) clr = darken(midDark, 20);
+      else if (noise < 0.08) clr = darken(dark, 25);
+      px(x, y, clr);
+    }
+  }
+
+  // ── Pixel mountain silhouettes (distant) ──
+  // Back range (lighter)
+  const mtnBase = horizonRow;
+  const mtnColor = mid;
+  function drawMountain(peakX, peakHeight, width, color) {
+    const startX = peakX - width;
+    const endX = peakX + width;
+    for (let x = startX; x <= endX; x++) {
+      const dist = Math.abs(x - peakX);
+      const heightFromBase = Math.floor(peakHeight * (1 - dist / width));
+      for (let y = mtnBase - heightFromBase; y < mtnBase; y++) {
+        px(x, y, color);
+      }
+    }
+  }
+  drawMountain(Math.floor(cols * 0.15), Math.floor(rows * 0.22), Math.floor(cols * 0.12), darken(mid, 15));
+  drawMountain(Math.floor(cols * 0.30), Math.floor(rows * 0.18), Math.floor(cols * 0.10), darken(midDark, 5));
+  drawMountain(Math.floor(cols * 0.50), Math.floor(rows * 0.25), Math.floor(cols * 0.13), darken(midDark, 15));
+  drawMountain(Math.floor(cols * 0.88), Math.floor(rows * 0.20), Math.floor(cols * 0.11), darken(mid, 10));
+
+  // ── Pixel birds (V-shapes) ──
+  function bird(x, y, color) {
+    px(x - 1, y - 1, color);
+    px(x, y, color);
+    px(x + 1, y - 1, color);
+    px(x - 2, y - 2, color);
+    px(x + 2, y - 2, color);
+  }
+  bird(Math.floor(cols * 0.25), Math.floor(rows * 0.25), dark);
+  bird(Math.floor(cols * 0.30), Math.floor(rows * 0.22), dark);
+  bird(Math.floor(cols * 0.35), Math.floor(rows * 0.28), dark);
+
+  // Re-enable smoothing for the text layer
+  c.imageSmoothingEnabled = true;
+}
+
+// ═══════════════════════════════════════════════════════
+// STYLE 04 — CONCEPTUAL SKETCH
+// Designer's working notebook: pencil lines, hatching, annotations
+// ═══════════════════════════════════════════════════════
+function drawSketch(W, H, p, c, isThumb) {
+  const sorted = [...p].sort((a,b) => luminance(b) - luminance(a));
+  // paper background - warm off-white
+  const paper = lighten(sorted[0], 20);
+  c.fillStyle = rgb(paper);
+  c.fillRect(0, 0, W, H);
+
+  const pencil = [40, 38, 35]; // warm graphite
+  const accent = [...p].sort((a,b) => saturation(b) - saturation(a))[0] || sorted[1];
+  const mid = sorted[Math.floor(sorted.length / 2)];
+
+  // Graph paper lines (very faint)
+  const gridSize = isThumb ? 12 : 36;
+  c.strokeStyle = 'rgba(60, 80, 120, 0.08)';
+  c.lineWidth = 0.5;
+  for (let x = 0; x < W; x += gridSize) {
+    c.beginPath(); c.moveTo(x, 0); c.lineTo(x, H); c.stroke();
+  }
+  for (let y = 0; y < H; y += gridSize) {
+    c.beginPath(); c.moveTo(0, y); c.lineTo(W, y); c.stroke();
+  }
+
+  const rand = mkRand(555);
+
+  // Sketchy line helper — slightly wobbly, multiple passes for pencil look
+  function sketchLine(x1, y1, x2, y2, color, width = 1.2, passes = 2) {
+    c.strokeStyle = rgba(color, 0.65);
+    c.lineWidth = width;
+    c.lineCap = 'round';
+    for (let p = 0; p < passes; p++) {
+      c.beginPath();
+      const steps = Math.max(3, Math.floor(Math.hypot(x2 - x1, y2 - y1) / 30));
+      c.moveTo(x1 + (rand() - 0.5) * 1.5, y1 + (rand() - 0.5) * 1.5);
+      for (let i = 1; i <= steps; i++) {
+        const t = i / steps;
+        const jitter = 1.2;
+        c.lineTo(
+          x1 + (x2 - x1) * t + (rand() - 0.5) * jitter,
+          y1 + (y2 - y1) * t + (rand() - 0.5) * jitter
+        );
+      }
+      c.stroke();
+    }
+  }
+
+  // Sketchy circle
+  function sketchCircle(cx, cy, r, color, width = 1.2) {
+    c.strokeStyle = rgba(color, 0.65);
+    c.lineWidth = width;
+    for (let p = 0; p < 2; p++) {
+      c.beginPath();
+      const steps = 40;
+      for (let i = 0; i <= steps; i++) {
+        const a = (i / steps) * Math.PI * 2;
+        const rr = r + (rand() - 0.5) * 2;
+        const x = cx + Math.cos(a) * rr;
+        const y = cy + Math.sin(a) * rr;
+        if (i === 0) c.moveTo(x, y); else c.lineTo(x, y);
+      }
+      c.stroke();
+    }
+  }
+
+  // Sketchy rectangle
+  function sketchRect(x, y, w, h, color, width = 1.2) {
+    sketchLine(x, y, x + w, y, color, width);
+    sketchLine(x + w, y, x + w, y + h, color, width);
+    sketchLine(x + w, y + h, x, y + h, color, width);
+    sketchLine(x, y + h, x, y, color, width);
+  }
+
+  // Cross-hatching fill
+  function hatch(x, y, w, h, color, density = 8, angle = Math.PI / 4) {
+    c.save();
+    c.beginPath();
+    c.rect(x, y, w, h);
+    c.clip();
+    c.strokeStyle = rgba(color, 0.25);
+    c.lineWidth = 0.6;
+    const spacing = density;
+    const dx = Math.cos(angle), dy = Math.sin(angle);
+    const d = Math.hypot(w, h);
+    for (let i = -d; i < d; i += spacing) {
+      c.beginPath();
+      c.moveTo(x + i - d, y - dy * d);
+      c.lineTo(x + i + d, y + dy * d * 2 + h);
+      c.stroke();
+    }
+    c.restore();
+  }
+
+  // ── Main sketch: abstract composition of shapes/objects ──
+  // (Suggesting a creative workspace without being literal)
+
+  // Large circle — "the idea"
+  sketchCircle(W * 0.55, H * 0.5, H * 0.3, pencil, 1.8);
+  hatch(W * 0.55 - H * 0.3, H * 0.5 - H * 0.3, H * 0.6, H * 0.6, accent, isThumb ? 10 : 16, Math.PI / 3);
+
+  // Smaller overlapping circle
+  sketchCircle(W * 0.72, H * 0.45, H * 0.15, pencil, 1.5);
+
+  // Rectangle (like a frame/canvas)
+  sketchRect(W * 0.35, H * 0.28, H * 0.5, H * 0.5, pencil, 1.5);
+
+  // Connector arrow from circle to rectangle
+  sketchLine(W * 0.45, H * 0.3, W * 0.42, H * 0.22, pencil, 1);
+  // arrowhead
+  c.strokeStyle = rgba(pencil, 0.7);
+  c.lineWidth = 1;
+  c.beginPath();
+  c.moveTo(W * 0.42, H * 0.22);
+  c.lineTo(W * 0.44, H * 0.26);
+  c.moveTo(W * 0.42, H * 0.22);
+  c.lineTo(W * 0.40, H * 0.27);
+  c.stroke();
+
+  // Annotation label next to the arrow
+  c.fillStyle = rgba(pencil, 0.85);
+  c.font = `italic 400 ${isThumb ? 9 : 18}px "Caveat", cursive`;
+  c.textBaseline = 'alphabetic';
+  c.textAlign = 'left';
+  c.fillText('the concept', W * 0.42, H * 0.18);
+
+  // Dimension marks on rectangle
+  c.strokeStyle = rgba(pencil, 0.4);
+  c.lineWidth = 0.8;
+  c.setLineDash([2, 3]);
+  c.beginPath();
+  c.moveTo(W * 0.35, H * 0.83);
+  c.lineTo(W * 0.85, H * 0.83);
+  c.stroke();
+  c.setLineDash([]);
+  c.fillStyle = rgba(pencil, 0.5);
+  c.font = `400 ${isThumb ? 8 : 14}px "JetBrains Mono", monospace`;
+  c.textAlign = 'center';
+  c.fillText('≈ 320 mm', W * 0.6, H * 0.88);
+
+  // Scribbly exploration marks
+  c.strokeStyle = rgba(pencil, 0.35);
+  c.lineWidth = 0.8;
+  c.beginPath();
+  let sx = W * 0.88, sy = H * 0.8;
+  c.moveTo(sx, sy);
+  for (let i = 0; i < 15; i++) {
+    sx += (rand() - 0.5) * 20;
+    sy += (rand() - 0.5) * 15;
+    c.lineTo(sx, sy);
+  }
+  c.stroke();
+
+  // Accent circle (filled) — "focus point"
+  c.fillStyle = rgba(accent, 0.8);
+  c.beginPath();
+  c.arc(W * 0.55, H * 0.5, 6, 0, Math.PI * 2);
+  c.fill();
+
+  // Small annotations scattered
+  c.fillStyle = rgba(pencil, 0.7);
+  c.font = `italic 400 ${isThumb ? 8 : 15}px "Caveat", cursive`;
+  c.textAlign = 'left';
+  c.fillText('?', W * 0.33, H * 0.25);
+  c.fillText('v2', W * 0.80, H * 0.30);
+  c.fillText('move this →', W * 0.15, H * 0.7);
+
+  // Page corner fold hint top-right
+  sketchLine(W * 0.975, H * 0.04, W * 0.995, H * 0.02, pencil, 0.8);
+  sketchLine(W * 0.995, H * 0.02, W * 0.995, H * 0.06, pencil, 0.8);
+
+  // Small rough swatches — bottom right "color studies"
+  if (!isThumb) {
+    p.slice(0, 4).forEach((col, i) => {
+      const sw = W * 0.03;
+      const swH = H * 0.08;
+      const sx2 = W * 0.88;
+      const sy2 = H * 0.6 + i * (swH + 4);
+      c.fillStyle = rgba(col, 0.85);
+      c.fillRect(sx2, sy2, sw, swH);
+      sketchRect(sx2, sy2, sw, swH, pencil, 0.8);
+    });
+  }
+
+  // Paper texture
+  if (!isThumb) addNoise(W, H, 0.04, c);
+}
+
+// ═══════════════════════════════════════════════════════
+// STYLE 05 — LUXURY TYPOGRAPHY
+// Fashion-editorial quote treatment. Uses state.quote input.
+// ═══════════════════════════════════════════════════════
+function drawLuxury(W, H, p, c, isThumb) {
+  const sorted = [...p].sort((a,b) => luminance(b) - luminance(a));
+  const bg = sorted[0];
+  const ink = sorted[sorted.length - 1];
+  const accent = [...p].sort((a,b) => saturation(b) - saturation(a))[0] || sorted[1];
+
+  // paper / creamy background
+  c.fillStyle = rgb(bg);
+  c.fillRect(0, 0, W, H);
+
+  // Hair-thin rules — very minimal luxury detail
+  c.fillStyle = rgba(ink, 0.3);
+  c.fillRect(W * 0.05, H * 0.1, W * 0.9, 0.5);
+  c.fillRect(W * 0.05, H * 0.9, W * 0.9, 0.5);
+
+  // Top and bottom small-caps labels like a fashion magazine
+  c.fillStyle = rgba(ink, 0.55);
+  c.font = `500 ${isThumb ? 7 : 11}px "JetBrains Mono", monospace`;
+  c.textBaseline = 'middle';
+  c.textAlign = 'left';
+  c.letterSpacing = '0.3em';
+  c.fillText('№ 06', W * 0.05, H * 0.07);
+  c.textAlign = 'right';
+  c.fillText('VOL · I', W * 0.95, H * 0.07);
+  c.textAlign = 'left';
+  c.fillText('— A FINE LIFE —', W * 0.05, H * 0.95);
+  c.textAlign = 'right';
+  c.fillText('MMXXVI', W * 0.95, H * 0.95);
+  if ('letterSpacing' in c) c.letterSpacing = '0px';
+
+  // ── The quote ──
+  const quoteText = state.quote?.trim() || 'Do one thing, and do it well.';
+
+  // Break quote into up to 3 lines
+  const words = quoteText.split(/\s+/);
+  const lines = [];
+  let current = '';
+  const maxCharsPerLine = Math.max(16, Math.min(28, Math.ceil(quoteText.length / 2.3)));
+  for (const w of words) {
+    const test = current ? current + ' ' + w : w;
+    if (test.length > maxCharsPerLine && current) {
+      lines.push(current);
+      current = w;
+    } else {
+      current = test;
+    }
+  }
+  if (current) lines.push(current);
+  const useLines = lines.slice(0, 3);
+
+  // Massive decorative opening quotation mark
+  c.fillStyle = rgba(accent, 0.22);
+  c.font = `900 ${H * 1.2}px "Cormorant Garamond", "Playfair Display", Georgia, serif`;
+  c.textBaseline = 'alphabetic';
+  c.textAlign = 'left';
+  c.fillText('\u201C', W * 0.30, H * 0.88);
+
+  // Quote text — elegant italic Cormorant
+  const baseSize = H * 0.16;
+  // Shrink if too many characters
+  const longestLineLen = Math.max(...useLines.map(l => l.length));
+  const sizeMult = Math.min(1, 24 / longestLineLen);
+  const quoteSize = baseSize * sizeMult;
+
+  c.fillStyle = rgb(ink);
+  c.font = `italic 400 ${quoteSize}px "Cormorant Garamond", "Playfair Display", Georgia, serif`;
+  c.textBaseline = 'alphabetic';
+  c.textAlign = 'left';
+
+  const lineHeight = quoteSize * 1.05;
+  const totalH = useLines.length * lineHeight;
+  const startY = H / 2 - totalH / 2 + quoteSize * 0.85;
+  const textX = W * 0.42;
+
+  useLines.forEach((line, i) => {
+    c.fillText(line, textX, startY + i * lineHeight);
+  });
+
+  // Author/attribution line under the quote
+  if (state.name) {
+    const attrY = startY + useLines.length * lineHeight + H * 0.05;
+    // thin rule
+    c.fillStyle = rgb(accent);
+    c.fillRect(textX, attrY - H * 0.04, H * 0.08, 1);
+    // name in small caps mono
+    c.fillStyle = rgba(ink, 0.75);
+    c.font = `500 ${H * 0.035}px "JetBrains Mono", monospace`;
+    c.textBaseline = 'alphabetic';
+    c.letterSpacing = '0.25em';
+    c.fillText(state.name.toUpperCase(), textX + H * 0.12, attrY - H * 0.033);
+    if ('letterSpacing' in c) c.letterSpacing = '0px';
+  }
+
+  // Tiny filigree accent - a small diamond shape somewhere
+  c.fillStyle = rgba(accent, 0.6);
+  c.save();
+  c.translate(W * 0.88, H * 0.5);
+  c.rotate(Math.PI / 4);
+  c.fillRect(-4, -4, 8, 8);
+  c.restore();
+
+  if (!isThumb) addNoise(W, H, 0.02, c);
+}
+
+// ═══════════════════════════════════════════════════════
+// STYLE 06 — ETHEREAL
+// Atmospheric light beams, mist, bokeh orbs. Dreamy depth.
+// ═══════════════════════════════════════════════════════
+function drawEthereal(W, H, p, c, isThumb) {
+  const sorted = [...p].sort((a,b) => luminance(a) - luminance(b));
+  // Deep base
+  const deep = sorted[0];
+  const mid = sorted[Math.floor(sorted.length / 2)];
+  const light = sorted[sorted.length - 1];
+  const accent = [...p].sort((a,b) => saturation(b) - saturation(a))[0] || light;
+
+  // Atmospheric gradient — dark top-left to glowing center-right
+  const base = c.createRadialGradient(W * 0.7, H * 0.5, 0, W * 0.5, H * 0.5, W * 0.9);
+  base.addColorStop(0, rgb(lighten(mid, 10)));
+  base.addColorStop(0.4, rgb(mid));
+  base.addColorStop(1, rgb(deep));
+  c.fillStyle = base;
+  c.fillRect(0, 0, W, H);
+
+  // ── God-rays / Light beams from upper-right ──
+  // Emanate from a point above-right and fan out downward-left
+  const originX = W * 0.85;
+  const originY = -H * 0.2;
+  const rayCount = 8;
+
+  // use screen blend for additive light
+  c.globalCompositeOperation = 'screen';
+  for (let i = 0; i < rayCount; i++) {
+    const angle = Math.PI * 0.35 + (i / rayCount) * Math.PI * 0.4;
+    const length = H * 2.5;
+    const endX = originX + Math.cos(angle) * length;
+    const endY = originY + Math.sin(angle) * length;
+    const width = 60 + Math.random() * 80;
+
+    c.save();
+    // Perpendicular offset for ray width
+    const perpX = -Math.sin(angle);
+    const perpY = Math.cos(angle);
+    const grad = c.createLinearGradient(
+      originX + perpX * width, originY + perpY * width,
+      originX - perpX * width, originY - perpY * width
+    );
+    grad.addColorStop(0, rgba(light, 0));
+    grad.addColorStop(0.5, rgba(light, 0.18));
+    grad.addColorStop(1, rgba(light, 0));
+    c.fillStyle = grad;
+    // draw elongated trapezoid along ray
+    c.beginPath();
+    c.moveTo(originX + perpX * width, originY + perpY * width);
+    c.lineTo(endX + perpX * width * 3, endY + perpY * width * 3);
+    c.lineTo(endX - perpX * width * 3, endY - perpY * width * 3);
+    c.lineTo(originX - perpX * width, originY - perpY * width);
+    c.closePath();
+    c.fill();
+    c.restore();
+  }
+  c.globalCompositeOperation = 'source-over';
+
+  // ── Warm glow where rays originate ──
+  const glow = c.createRadialGradient(originX, originY, 0, originX, originY, H * 1.2);
+  glow.addColorStop(0, rgba(lighten(accent, 30), 0.5));
+  glow.addColorStop(0.5, rgba(accent, 0.15));
+  glow.addColorStop(1, rgba(accent, 0));
+  c.fillStyle = glow;
+  c.fillRect(0, 0, W, H);
+
+  // ── Bokeh orbs (soft out-of-focus light circles) ──
+  const rand = mkRand(77);
+  const orbCount = isThumb ? 12 : 28;
+  c.globalCompositeOperation = 'screen';
+  for (let i = 0; i < orbCount; i++) {
+    const ox = rand() * W;
+    const oy = rand() * H;
+    const oR = 15 + rand() * (isThumb ? 20 : 60);
+    const color = rand() > 0.5 ? light : accent;
+
+    // outer soft glow
+    const og = c.createRadialGradient(ox, oy, 0, ox, oy, oR);
+    og.addColorStop(0, rgba(color, 0.35 + rand() * 0.25));
+    og.addColorStop(0.4, rgba(color, 0.1));
+    og.addColorStop(1, rgba(color, 0));
+    c.fillStyle = og;
+    c.beginPath();
+    c.arc(ox, oy, oR, 0, Math.PI * 2);
+    c.fill();
+
+    // bright hot center
+    c.fillStyle = rgba(lighten(color, 50), 0.4);
+    c.beginPath();
+    c.arc(ox, oy, oR * 0.15, 0, Math.PI * 2);
+    c.fill();
+  }
+  c.globalCompositeOperation = 'source-over';
+
+  // ── Atmospheric mist band across bottom ──
+  const mistGrad = c.createLinearGradient(0, H * 0.5, 0, H);
+  mistGrad.addColorStop(0, 'rgba(255,255,255,0)');
+  mistGrad.addColorStop(0.5, rgba(light, 0.08));
+  mistGrad.addColorStop(1, rgba(light, 0.15));
+  c.fillStyle = mistGrad;
+  c.fillRect(0, H * 0.5, W, H * 0.5);
+
+  // ── Subtle particle field — tiny light flecks ──
+  for (let i = 0; i < (isThumb ? 30 : 100); i++) {
+    const px = rand() * W;
+    const py = rand() * H;
+    const pSize = rand() * 1.5 + 0.3;
+    c.fillStyle = rgba(light, 0.4 + rand() * 0.5);
+    c.beginPath();
+    c.arc(px, py, pSize, 0, Math.PI * 2);
+    c.fill();
+  }
+
+  // ── Vignette for depth ──
+  const vg = c.createRadialGradient(W * 0.6, H * 0.5, W * 0.3, W * 0.6, H * 0.5, W * 0.8);
+  vg.addColorStop(0, 'rgba(0,0,0,0)');
+  vg.addColorStop(1, rgba(deep, 0.5));
+  c.fillStyle = vg;
+  c.fillRect(0, 0, W, H);
+
+  if (!isThumb) addNoise(W, H, 0.025, c);
+}
+
+// ═══════════════════════════════════════════════════════
+// NOISE
+// ═══════════════════════════════════════════════════════
+function addNoise(W, H, intensity, c) {
+  const imgData = c.getImageData(0, 0, W, H);
+  const d = imgData.data;
+  for (let i = 0; i < d.length; i += 4) {
+    const n = (Math.random() - 0.5) * 255 * intensity;
+    d[i]   = Math.max(0, Math.min(255, d[i]   + n));
+    d[i+1] = Math.max(0, Math.min(255, d[i+1] + n));
+    d[i+2] = Math.max(0, Math.min(255, d[i+2] + n));
+  }
+  c.putImageData(imgData, 0, 0);
+}
+
+// ═══════════════════════════════════════════════════════
+// TEXT OVERLAY
+// ═══════════════════════════════════════════════════════
+function drawText(W, H, p, c) {
+  if (!state.name && !state.title) return;
+  // Luxury style uses the quote + name as art; skip corner overlay
+  if (state.style === 'luxury') return;
+
+  const font = FONTS.find(f => f.id === state.font) || FONTS[0];
+  const corner = state.corner;
+  const padX = W * 0.05;
+  const padY = H * 0.15;
+
+  let anchorX, anchorY, align, fromTop;
+  switch (corner) {
+    case 'tl': anchorX = padX;     anchorY = padY;     align = 'left';  fromTop = true;  break;
+    case 'tr': anchorX = W - padX; anchorY = padY;     align = 'right'; fromTop = true;  break;
+    case 'bl': anchorX = W * 0.22; anchorY = H - padY; align = 'left';  fromTop = false; break;
+    case 'br': anchorX = W - padX; anchorY = H - padY; align = 'right'; fromTop = false; break;
+  }
+
+  const sampleW = Math.min(W * 0.45, 600);
+  const sampleH = Math.min(H * 0.5, 200);
+  let sx, sy;
+  switch (corner) {
+    case 'tl': sx = 0;           sy = 0; break;
+    case 'tr': sx = W - sampleW; sy = 0; break;
+    case 'bl': sx = W * 0.15;    sy = H - sampleH; break;
+    case 'br': sx = W - sampleW; sy = H - sampleH; break;
+  }
+  sx = Math.max(0, Math.min(W - sampleW, sx));
+  sy = Math.max(0, Math.min(H - sampleH, sy));
+  const sample = c.getImageData(sx, sy, sampleW, sampleH).data;
+  let lum = 0, count = 0;
+  for (let i = 0; i < sample.length; i += 16) {
+    lum += luminance([sample[i], sample[i+1], sample[i+2]]);
+    count++;
+  }
+  lum = lum / count;
+  const isLightBg = lum > 140;
+  const textColor = isLightBg ? '#1a1713' : '#fafafa';
+  const shadowColor = isLightBg ? 'rgba(255,255,255,0.45)' : 'rgba(0,0,0,0.45)';
+
+  const displaySize = 74 * (font.displaySizeMult || 1);
+  const bodySize = 32 * (font.bodySizeMult || 1);
+  const gap = 14;
+
+  c.textAlign = align;
+  c.shadowColor = shadowColor;
+  c.shadowBlur = 10;
+  c.shadowOffsetX = 0;
+  c.shadowOffsetY = 1;
+  c.fillStyle = textColor;
+  c.textBaseline = 'alphabetic';
+
+  const lines = [];
+  if (state.name) lines.push({
+    text: state.name, size: displaySize,
+    weight: font.displayWeight, style: font.displayStyle, family: font.display,
+    letterSpacing: font.letterSpacing || '0', uppercase: false,
+  });
+  if (state.title) lines.push({
+    text: state.title, size: bodySize,
+    weight: font.bodyWeight, style: font.bodyStyle, family: font.body,
+    letterSpacing: font.bodyLetterSpacing || '0', uppercase: !!font.bodyUppercase,
+  });
+
+  if (fromTop) {
+    let y = anchorY;
+    for (const line of lines) {
+      y += line.size * 0.82;
+      drawLine(line, anchorX, y);
+      y += gap + line.size * 0.18;
+    }
+  } else {
+    let y = anchorY;
+    for (let i = lines.length - 1; i >= 0; i--) {
+      const line = lines[i];
+      drawLine(line, anchorX, y);
+      y -= line.size + gap;
+    }
+  }
+
+  function drawLine(line, x, y) {
+    c.font = `${line.style} ${line.weight} ${line.size}px ${line.family}`;
+    const text = line.uppercase ? line.text.toUpperCase() : line.text;
+    if ('letterSpacing' in c) c.letterSpacing = line.letterSpacing;
+    c.fillText(text, x, y);
+    if ('letterSpacing' in c) c.letterSpacing = '0px';
+  }
+
+  c.shadowColor = 'transparent';
+  c.shadowBlur = 0;
+}
+
+// Download flow
+function openPreviewModal() {
+  if (!state.portrait) return;
+  if (remainingDownloads() <= 0) { updateQuotaUI(); return; }
+  render();
+  setTimeout(() => {
+    try {
+      const dataURL = canvas.toDataURL('image/png');
+      modalImg.src = dataURL;
+      modalBackdrop.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    } catch (err) {
+      console.error('Preview error:', err);
+      alert('Could not generate preview. Please try again.');
+    }
+  }, 50);
+}
+function closePreviewModal() {
+  modalBackdrop.classList.remove('open');
+  document.body.style.overflow = '';
+}
+function confirmDownload() {
+  try {
+    render();
+    setTimeout(() => {
+      const dataURL = canvas.toDataURL('image/png');
+      const link = document.createElement('a');
+      const fname = (state.name || 'linkedin-banner').replace(/[^a-z0-9]/gi, '-').toLowerCase() || 'finebanner';
+      link.download = `${fname}-finebanner.png`;
+      link.href = dataURL;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      recordDownload();
+      closePreviewModal();
+    }, 50);
+  } catch (err) {
+    console.error('Download error:', err);
+    alert('Download failed. Please try again.');
+  }
+}
+
+downloadBtn.addEventListener('click', openPreviewModal);
+modalClose.addEventListener('click', closePreviewModal);
+modalBack.addEventListener('click', closePreviewModal);
+modalConfirm.addEventListener('click', confirmDownload);
+modalBackdrop.addEventListener('click', (e) => { if (e.target === modalBackdrop) closePreviewModal(); });
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && modalBackdrop.classList.contains('open')) closePreviewModal();
+});
+
+function updateQuotaUI() {
+  const rem = remainingDownloads();
+  quotaMeta.textContent = `${rem} download${rem === 1 ? '' : 's'} available`;
+  if (rem === 0) {
+    const wait = timeUntilReset();
+    downloadBtn.disabled = true;
+    downloadBtn.textContent = 'Limit Reached';
+    quotaMsg.className = 'quota-msg blocked';
+    quotaMsg.innerHTML = `Limit reached — wait <strong>${formatDuration(wait)}</strong> to download again`;
+  } else if (rem <= 3) {
+    quotaMsg.className = 'quota-msg warn';
+    quotaMsg.textContent = `${rem} of ${RATE_LIMIT} downloads remaining`;
+    if (state.portrait) downloadBtn.disabled = false;
+    downloadBtn.textContent = 'Preview & Download →';
+  } else {
+    quotaMsg.className = 'quota-msg';
+    quotaMsg.textContent = `${rem} of ${RATE_LIMIT} downloads available`;
+    if (state.portrait) downloadBtn.disabled = false;
+    downloadBtn.textContent = 'Preview & Download →';
+  }
+}
+
+updateQuotaUI();
+setInterval(updateQuotaUI, 30000);
+</script>
+
+</body>
+</html>
