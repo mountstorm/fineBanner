@@ -4,8 +4,6 @@
 
 [![Built by Mountstorm Labs](https://img.shields.io/badge/Mountstorm-Labs-1a1714)](https://github.com/mountstorm)
 
-![The fineBanner studio, waiting for a portrait](docs/studio.png)
-
 *Version 0, April 2026. One HTML file that makes a LinkedIn header for free and fast.*
 
 ## What it does
